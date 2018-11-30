@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Truck</h3>
+
+<div class="btn-group">
+  <a href="/order/{{item.itemId}}/edit" class="btn btn-primary btn-sm">
+    <i class="glyphicon glyphicon-edit"></i>
+    Edit truck
+  </a>
+  <a href="/trucks/{{item.itemId}}/delete" class="btn btn-danger btn-sm">
+    <i class="glyphicon glyphicon-trash"></i>
+    Delete truck
+  </a>
+</div>
+
+<div class="media">
+
+</div>
+
+{% endblock %}

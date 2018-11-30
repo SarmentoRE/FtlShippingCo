@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Trucks</h3>
+<a href="/trucks/add" class="btn btn-success btn-sm">
+  <i class="glyphicon glyphicon-plus"></i>
+  Add Truck
+</a>
+
+{% for truck in trucks %}
+<div class="media">
+  <a href="/trucks/{{truck.truckId}}">
+  </a>
+</div>
+{% else %}
+<p>No trucks found</p>
+{% endfor %}
+
+{% if next_page_token %}
+<nav>
+  <ul class="pager">
+    <li><a href="?page_token={{next_page_token}}">More</a></li>
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

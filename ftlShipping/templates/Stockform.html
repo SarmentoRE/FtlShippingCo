@@ -1,0 +1,38 @@
+{# [START form] #}
+{% extends "base.html" %}
+
+{% block content %}
+<h3>{{action}}</h3>
+
+<form method="POST" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label for="itemId">Item Id</label>
+    <input type="number" name="itemId" id="itemId" value="{{item.itemId}}" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" value="{{item.name}}" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label for="weight">Weight</label>
+    <input type="number" name="weight" id="weight" value="{{item.weight}}" class="form-control"/>
+  </div>
+
+    <div class="form-group">
+    <label for="category">Category</label>
+    <input type="test" name="category" id="category" value="{{item.category}}" class="form-control"/>
+  </div>
+
+    <div class="form-group">
+    <label for="stock">Amount in Stock</label>
+    <input type="number" name="stock" id="stock" value="{{item.stock}}" class="form-control"/>
+  </div>
+
+  <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+{% endblock %}
+{# [END form] #}

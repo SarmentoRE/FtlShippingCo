@@ -1,0 +1,48 @@
+{# [START form] #}
+{% extends "base.html" %}
+
+{% block content %}
+<h3>{{action}}</h3>
+
+<form method="POST" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label for="orderId">Order Id</label>
+    <input type="number" name="orderId" id="orderId" value="{{order.orderId}}" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label for="carrier">Carrier</label>
+    <input type="text" name="carrier" id="carrier" value="{{truck.carrier}}" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label for="weightCapacity">Weight Capacity</label>
+    <input type="number" name="weightCapacity" id="weightCapacity" value="{{truck.weightCapacity}}" class="form-control"/>
+  </div>
+
+    <div class="form-group">
+    <label for="costPerMile">Cost Per Mile</label>
+    <input type="number" name="costPerMile" id="costPerMile" value="{{truck.costPerMile}}" class="form-control"/>
+  </div>
+
+    <div class="form-group">
+    <label for="maxVolume">Max Volume</label>
+    <input type="number" name="maxVolume" id="maxVolume" value="{{truck.maxVolume}}" class="form-control"/>
+  </div>
+
+    <div class="form-group">
+            <label for="inUse">In Use</label>
+            <input type="number" name="inUse" id="inUse" value="{{truck.inUse}}" class="form-control"/>
+    </div>
+
+  <div class="form-group">
+    <label for="type">Type</label>
+    <input type="text" name="type" id="type" class="form-control" value="{{truck.type}}"/>
+  </div>
+
+  <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+{% endblock %}
+{# [END form] #}
