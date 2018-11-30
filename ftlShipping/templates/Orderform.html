@@ -2,46 +2,117 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>{{action}}</h3>
+<h3>{{action}} Order</h3>
 
 <form method="POST" enctype="multipart/form-data">
-
-  <div class="form-group">
-    <label for="orderId">Order Id</label>
-    <input type="number" name="orderId" id="orderId" value="{{order.orderId}}" class="form-control"/>
-  </div>
-
-  <div class="form-group">
-    <label for="carrier">Carrier</label>
-    <input type="text" name="carrier" id="carrier" value="{{truck.carrier}}" class="form-control"/>
-  </div>
-
-  <div class="form-group">
-    <label for="weightCapacity">Weight Capacity</label>
-    <input type="number" name="weightCapacity" id="weightCapacity" value="{{truck.weightCapacity}}" class="form-control"/>
-  </div>
-
     <div class="form-group">
-    <label for="costPerMile">Cost Per Mile</label>
-    <input type="number" name="costPerMile" id="costPerMile" value="{{truck.costPerMile}}" class="form-control"/>
-  </div>
-
-    <div class="form-group">
-    <label for="maxVolume">Max Volume</label>
-    <input type="number" name="maxVolume" id="maxVolume" value="{{truck.maxVolume}}" class="form-control"/>
-  </div>
-
-    <div class="form-group">
-            <label for="inUse">In Use</label>
-            <input type="number" name="inUse" id="inUse" value="{{truck.inUse}}" class="form-control"/>
+        <label for="orderId">Order Id</label>
+        <input type="number" name="orderId" id="orderId" value="{{order.orderId}}" class="form-control"/>
     </div>
 
-  <div class="form-group">
-    <label for="type">Type</label>
-    <input type="text" name="type" id="type" class="form-control" value="{{truck.type}}"/>
-  </div>
+    <div class="form-group">
+        <label for="weight">Weight</label>
+        <input type="number" name="weight" id="weight" value="{{order.weight}}" class="form-control"/>
+    </div>
 
-  <button type="submit" class="btn btn-success">Save</button>
+    <div class="form-group">
+        <label for="volume">Volume</label>
+        <input type="number" name="volume" id="volume" value="{{order.volume}}" class="form-control"/>
+    </div>
+
+    <div class="form-group">
+        <label for="dateOrdered">Order Date</label>
+        <input type="date" name="dateOrdered" id="dateOrdered" value="{{order.dateOrdered}}" class="form-control"/>
+    </div>
+
+    <div class="form-group">
+        <label for="orderStatus">Order Status</label>
+        <input type="text" name="orderStatus" id="orderStatus" value="{{order.orderStatus}}" class="form-control"/>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Destination address:</h3>
+                <div class="form-group">
+                    <label for="destStreetName">Street Name</label>
+                    <input type="text" name="destStreetName" id="destStreetName" value="{{order.destStreetName}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destStreetNumber">Street Number</label>
+                    <input type="number" name="destStreetNumber" id="destStreetNumber"
+                           value="{{order.destStreetNumber}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destAptNumber">Apt Number</label>
+                    <input type="text" name="destAptNumber" id="destAptNumber" value="{{order.destAptNumber}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destCity">City</label>
+                    <input type="text" name="destCity" id="destCity" value="{{order.destCity}}" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destState">State</label>
+                    <input type="text" name="destState" id="destState" class="form-control"
+                           value="{{order.destState}}"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destZip">Zip</label>
+                    <input type="number" name="destZip" id="destZip" class="form-control" value="{{order.destZip}}"/>
+                </div>
+            </div>
+
+            <div class="col">
+                <h3>Origin address:</h3>
+                <div class="form-group">
+                    <label for="originStreetName">Street Name</label>
+                    <input type="text" name="originStreetName" id="originStreetName"
+                           value="{{order.originStreetName}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="originStreetNumber">Street Number</label>
+                    <input type="number" name="originStreetNumber" id="originStreetNumber"
+                           value="{{order.originStreetNumber}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="destAptNumber">Apt Number</label>
+                    <input type="text" name="originAptNumber" id="originAptNumber" value="{{order.originAptNumber}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="originCity">City</label>
+                    <input type="text" name="originCity" id="originCity" value="{{order.originCity}}"
+                           class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="originState">State</label>
+                    <input type="text" name="originState" id="originState" class="form-control"
+                           value="{{order.originState}}"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="originZip">Zip</label>
+                    <input type="number" name="originZip" id="originZip" class="form-control"
+                           value="{{order.originZip}}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
 </form>
 
 {% endblock %}

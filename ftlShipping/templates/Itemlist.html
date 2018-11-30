@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Items</h3>
+<a href="/item/add" class="btn btn-success btn-sm">
+    <i class="glyphicon glyphicon-plus"></i>
+    Add Item
+</a>
+
+<div class="media">
+    <table class="table-striped" width="400">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Stock</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in item %}
+        <tr>
+            <td><a href="/item/{{item.itemId}}">
+                {{item.itemId}}
+            </a></td>
+            <td>{{item.name}}</td>
+            <td>{{item.category}}</td>
+            <td>{{item.stock}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if next_page_token %}
+<nav>
+    <ul class="pager">
+        <li><a href="?page_token={{next_page_token}}">More</a></li>
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

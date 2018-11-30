@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{item.name}}</h3>
+
+<p>ID: {{item.id}}</p>
+<p>Name: {{item.name}}</p>
+<p>Category: {{item.category}}</p>
+<p>Weight: {{item.weight}} lbs.</p>
+<p>Volume: {{item.volume}} lbs.</p>
+<p>Stock: {{item.stock}}</p>
+
+<div class="btn-group">
+    <a href="/item/{{item.itemId}}/edit" class="btn btn-primary btn-sm">
+        <i class="glyphicon glyphicon-edit"></i>
+        Edit item
+    </a>
+    <a href="/item/{{item.itemId}}/delete" class="btn btn-danger btn-sm">
+        <i class="glyphicon glyphicon-trash"></i>
+        Delete item
+    </a>
+</div>
+{% endblock %}

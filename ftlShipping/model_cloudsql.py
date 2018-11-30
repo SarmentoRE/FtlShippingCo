@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy.orm import synonym
 
 builtin_list = list
 
@@ -33,6 +33,7 @@ class Truck(db.Model):
     costPerMile = db.Column(db.Numeric())
     maxVolume = db.Column(db.Numeric())
     carrier = db.Column(db.String(30))
+    id = synonym("truckId")
 
     def __repr__(self):
         return "<Truck(id='%i', carrier=%s)" % (self.truckId, self.carrier)
@@ -59,8 +60,7 @@ class Order(db.Model):
     volume = db.Column(db.Numeric())
     dateOrdered = db.Column(db.Date())
     orderStatus = db.Column(db.String(16))
-
-    id = orderId
+    id = synonym("orderId")
 
     def __repr__(self):
         if self.destAptNumber is None:
@@ -68,16 +68,16 @@ class Order(db.Model):
         return "<Order(id='%i'\nDestination Address:\n%i %s\n%s\n%s, %s, %i\n\nStatus='%s')" % (self.orderId, self.destStreetNumber, self.destStreetName, self.destAptNumber, self.destCity, self.destState, self.destZip, self.orderStatus)
 
 
-class Stock(db.Model):
+class Item(db.Model):
     __tablename__ = 'Item'
 
-    itemId = db.Column(db.Integer, primary_key=True)
+    itemId = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(30))
     stock = db.Column(db.Integer)
     category = db.Column(db.String(30))
     weight = db.Column(db.Numeric())
-
-    id = itemId
+    volume = db.Column(db.Numeric())
+    id = synonym("itemId")
 
     def __repr__(self):
         return "<Item(id='%i' name='%s' stock='%i' weight='%f')" % (self.itemId, self.name, self.stock, self.weight)
@@ -130,10 +130,10 @@ def delete(id):
 
 
 # [START list]
-def listStock(limit=10, cursor=None):
+def listItem(limit=10, cursor=None):
     cursor = int(cursor) if cursor else 0
-    query = (Stock.query
-             .order_by(Stock.itemId)
+    query = (Item.query
+             .order_by(Item.itemId)
              .limit(limit)
              .offset(cursor))
     items = builtin_list(map(from_sql, query.all()))
@@ -144,8 +144,8 @@ def listStock(limit=10, cursor=None):
 
 
 # [START read]
-def readStock(id):
-    result = Stock.query.get(id)
+def readItem(id):
+    result = Item.query.get(id)
     if not result:
         return None
     return from_sql(result)
@@ -153,8 +153,8 @@ def readStock(id):
 
 
 # [START create]
-def createStock(data):
-    item = Stock(**data)
+def createItem(data):
+    item = Item(**data)
     db.session.add(item)
     db.session.commit()
     return from_sql(item)
@@ -162,8 +162,8 @@ def createStock(data):
 
 
 # [START update]
-def updateStock(data, id):
-    item = Stock.query.get(id)
+def updateItem(data, id):
+    item = Item.query.get(id)
     for k, v in data.items():
         setattr(item, k, v)
     db.session.commit()
@@ -171,8 +171,8 @@ def updateStock(data, id):
 # [END update]
 
 
-def deleteStock(id):
-    Stock.query.filter_by(id=id).delete()
+def deleteItem(id):
+    Item.query.filter_by(id=id).delete()
     db.session.commit()
 
 

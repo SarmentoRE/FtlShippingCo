@@ -89,24 +89,24 @@ def addOrders():
 
         order = get_model().createOrder(data)
 
-        return redirect(url_for('.view', id=order['id']))
+        return redirect(url_for('.viewOrders', id=order['id']))
 
-    return render_template("Orderform.html", action="Add", truck={})
+    return render_template("Orderform.html", action="Add", order={})
 # [END add]
 
 
 @crud.route('orders/<id>/edit', methods=['GET', 'POST'])
 def editOrders(id):
-    truck = get_model().readOrder(id)
+    order = get_model().readOrder(id)
 
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
 
-        truck = get_model().updateOrder(data, id)
+        order = get_model().updateOrder(data, id)
 
-        return redirect(url_for('.view', id=truck['id']))
+        return redirect(url_for('.viewOrders', id=order['id']))
 
-    return render_template("Orderform.html", action="Edit", truck=truck)
+    return render_template("Orderform.html", action="Edit", order=order)
 
 
 @crud.route('orders/<id>/delete')
@@ -115,54 +115,54 @@ def deleteOrders(id):
     return redirect(url_for('.listOrders'))
 
 
-# Begin Stock
-@crud.route("/stock")
-def listStock():
+# Begin Item
+@crud.route("/item")
+def listItem():
     token = request.args.get('page_token', None)
     if token:
         token = token.encode('utf-8')
 
-    items, next_page_token = get_model().listStock(cursor=token)
+    items, next_page_token = get_model().listItem(cursor=token)
 
     return render_template(
-        "Stocklist.html",
+        "Itemlist.html",
         item=items,
         next_page_token=next_page_token)
 
 
-@crud.route('stock/<id>')
-def viewStock(id):
-    item = get_model().readStock(id)
-    return render_template("Stockview.html", item=item)
+@crud.route('item/<id>')
+def viewItemk(id):
+    item = get_model().readItem(id)
+    return render_template("Itemview.html", item=item)
 
 
-@crud.route('stock/add', methods=['GET', 'POST'])
-def addStock():
+@crud.route('item/add', methods=['GET', 'POST'])
+def addItem():
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
 
-        item = get_model().createStock(data)
+        item = get_model().createItem(data)
 
-        return redirect(url_for('.view', id=item['id']))
+        return redirect(url_for('.viewItem', id=item['id']))
 
-    return render_template("Stockform.html", action="Add", item={})
+    return render_template("Itemform.html", action="Add", item={})
 
 
-@crud.route('stock/<id>/edit', methods=['GET', 'POST'])
-def editStock(id):
-    item = get_model().readStock(id)
+@crud.route('item/<id>/edit', methods=['GET', 'POST'])
+def editItem(id):
+    item = get_model().readItem(id)
 
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
 
-        item = get_model().updateStock(data, id)
+        item = get_model().updateItem(data, id)
 
-        return redirect(url_for('.view', id=item['id']))
+        return redirect(url_for('.viewItem', id=item['id']))
 
-    return render_template("Stockform.html", action="Edit", item=item)
+    return render_template("Itemform.html", action="Edit", item=item)
 
 
-@crud.route('stock/<id>/delete')
-def deleteStock(id):
-    get_model().deleteStock(id)
-    return redirect(url_for('.listStock'))
+@crud.route('item/<id>/delete')
+def deleteItem(id):
+    get_model().deleteItemk(id)
+    return redirect(url_for('.listItem'))

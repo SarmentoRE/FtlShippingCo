@@ -2,21 +2,41 @@
 
 {% block content %}
 
-<h3>Truck</h3>
+<h3>Order {{order.orderId}}</h3>
 
-<div class="btn-group">
-  <a href="/order/{{item.itemId}}/edit" class="btn btn-primary btn-sm">
-    <i class="glyphicon glyphicon-edit"></i>
-    Edit truck
-  </a>
-  <a href="/trucks/{{item.itemId}}/delete" class="btn btn-danger btn-sm">
-    <i class="glyphicon glyphicon-trash"></i>
-    Delete truck
-  </a>
+<div>
+    <p>Order ID: {{order.orderId}}</p>
+    <p>Order Date: {{order.dateOrdered}}</p>
+    <p>Order Weight: {{order.weight}} lbs.</p>
+    <p>Order Volume: {{order.volume}}</p>
+    <p>Order Status: {{order.orderStatus}}</p>
+    <h6>Origin Address:</h6>
+    <ul class="list-unstyled">
+        <li>{{order.originStreetNumber}} {{order.originStreetName}}</li>
+        {% if order.originAptNumber == None %}
+        <li>{{order.originAptNumber}}</li>
+        {% endif %}
+        <li>{{order.originCity}}, {{order.originState}}, {{order.originZip}}</li>
+    </ul>
+    <h6>Destination Address:</h6>
+    <ul class="list-unstyled">
+        <li>{{order.destStreetNumber}} {{order.destStreetName}}</li>
+        {% if order.destAptNumber == None %}
+        <li>{{order.destAptNumber}}</li>
+        {% endif %}
+        <li margin="0">{{order.destCity}}, {{order.destState}}, {{order.destZip}}</li>
+    </ul>
 </div>
 
-<div class="media">
-
+<div class="btn-group">
+    <a href="/order/{{order.orderId}}/edit" class="btn btn-primary btn-sm">
+        <i class="glyphicon glyphicon-edit"></i>
+        Edit order
+    </a>
+    <a href="/trucks/{{order.orderId}}/delete" class="btn btn-danger btn-sm">
+        <i class="glyphicon glyphicon-trash"></i>
+        Delete order
+    </a>
 </div>
 
 {% endblock %}
