@@ -4,8 +4,8 @@
 
 <h3>Trucks</h3>
 <a href="/trucks/add" class="btn btn-success btn-sm">
-  <i class="glyphicon glyphicon-plus"></i>
-  Add Truck
+    <i class="glyphicon glyphicon-plus"></i>
+    Add Truck
 </a>
 
 <div class="media">
@@ -22,7 +22,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in item %}
+        {% for truck in truck %}
         <tr>
             <td><a href="/trucks/{{truck.truckId}}">
                 {{truck.truckId}}
@@ -33,6 +33,12 @@
             <td>{{truck.weightCapacity}}</td>
             <td>{{truck.maxVolume}}</td>
             <td>{{truck.costPerMile}}</td>
+            {% if action == "ship" %}
+            <td><a href="/trucks/deliver/{{truck.truckId}}/{{order.orderId}}" class="btn btn-success btn-sm">
+                <i class="glyphicon glyphicon-edit"></i>
+                Choose Truck
+            </a></td>
+            {% endif %}
         </tr>
         {% endfor %}
         </tbody>
@@ -41,9 +47,9 @@
 
 {% if next_page_token %}
 <nav>
-  <ul class="pager">
-    <li><a href="?page_token={{next_page_token}}">More</a></li>
-  </ul>
+    <ul class="pager">
+        <li><a href="?page_token={{next_page_token}}">More</a></li>
+    </ul>
 </nav>
 {% endif %}
 

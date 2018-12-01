@@ -76,10 +76,18 @@ def listOrders():
         next_page_token=next_page_token)
 
 
+@crud.route('orders/<id>/ship')
+def shipOrder(id):
+    truck = get_model().findTrucks(id)
+    order = get_model().readOrder(id)
+    return render_template("Trucklist.html", truck=truck, action="ship", order=order)
+
+
 @crud.route('orders/<id>')
 def viewOrders(id):
     order = get_model().readOrder(id)
-    return render_template("Orderview.html", order=order)
+    item = get_model().readItemsOrdered(id)
+    return render_template("Orderview.html", order=order, item=item)
 
 
 @crud.route('orders/add', methods=['GET', 'POST'])
@@ -92,6 +100,8 @@ def addOrders():
         return redirect(url_for('.viewOrders', id=order['id']))
 
     return render_template("Orderform.html", action="Add", order={})
+
+
 # [END add]
 
 
@@ -101,7 +111,7 @@ def editOrders(id):
 
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
-
+        print(data)
         order = get_model().updateOrder(data, id)
 
         return redirect(url_for('.viewOrders', id=order['id']))
@@ -131,7 +141,7 @@ def listItem():
 
 
 @crud.route('item/<id>')
-def viewItemk(id):
+def viewItem(id):
     item = get_model().readItem(id)
     return render_template("Itemview.html", item=item)
 
@@ -166,3 +176,15 @@ def editItem(id):
 def deleteItem(id):
     get_model().deleteItemk(id)
     return redirect(url_for('.listItem'))
+
+
+@crud.route('trucks/deliver/<truckId>/<orderId>')
+def addItemToTruck(truckId, orderId):
+    get_model().createDelivery(truckId, orderId)
+    order = get_model().readOrder(orderId)
+    order['orderStatus'] = "Shipped"
+    get_model().updateOrder(order, orderId)
+    return redirect(url_for('.listOrders'))
+
+
+

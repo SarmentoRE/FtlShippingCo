@@ -4,7 +4,6 @@ from sqlalchemy.orm import synonym
 
 builtin_list = list
 
-
 db = SQLAlchemy()
 
 
@@ -40,6 +39,15 @@ class Truck(db.Model):
 # [END truck model]
 
 
+class Delivery(db.Model):
+    __tablename__ = 'Delivery'
+
+    truckId = db.Column(db.Integer, primary_key=True)
+    orderId = db.Column(db.Integer, primary_key=True)
+    deliveryDate = db.Column(db.Date())
+    id = synonym("truckId")
+
+
 class Order(db.Model):
     __tablename__ = 'Orders'
 
@@ -64,14 +72,18 @@ class Order(db.Model):
 
     def __repr__(self):
         if self.destAptNumber is None:
-            return "<Order(id='%i'\nDestination Address:\n%i %s\n%s, %s, %i\n\nStatus='%s')" % (self.orderId, self.destStreetNumber, self.destStreetName, self.destCity, self.destState, self.destZip, self.orderStatus)
-        return "<Order(id='%i'\nDestination Address:\n%i %s\n%s\n%s, %s, %i\n\nStatus='%s')" % (self.orderId, self.destStreetNumber, self.destStreetName, self.destAptNumber, self.destCity, self.destState, self.destZip, self.orderStatus)
+            return "<Order(id='%i'\nDestination Address:\n%i %s\n%s, %s, %i\n\nStatus='%s')" % (
+                self.orderId, self.destStreetNumber, self.destStreetName, self.destCity, self.destState, self.destZip,
+                self.orderStatus)
+        return "<Order(id='%i'\nDestination Address:\n%i %s\n%s\n%s, %s, %i\n\nStatus='%s')" % (
+            self.orderId, self.destStreetNumber, self.destStreetName, self.destAptNumber, self.destCity, self.destState,
+            self.destZip, self.orderStatus)
 
 
 class Item(db.Model):
     __tablename__ = 'Item'
 
-    itemId = db.Column(db.Integer, primary_key=True, unique=True)
+    itemId = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     stock = db.Column(db.Integer)
     category = db.Column(db.String(30))
@@ -81,6 +93,15 @@ class Item(db.Model):
 
     def __repr__(self):
         return "<Item(id='%i' name='%s' stock='%i' weight='%f')" % (self.itemId, self.name, self.stock, self.weight)
+
+
+class ItemsOrdered(db.Model):
+    __tablename__ = 'ItemsOrdered'
+
+    orderId = db.Column(db.Integer, primary_key=True)
+    itemId = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Integer)
+    id = synonym('orderId')
 
 
 # [START list]
@@ -93,6 +114,8 @@ def list(limit=10, cursor=None):
     trucks = builtin_list(map(from_sql, query.all()))
     next_page = cursor + limit if len(trucks) == limit else None
     return (trucks, next_page)
+
+
 # [END list]
 
 
@@ -102,15 +125,20 @@ def read(id):
     if not result:
         return None
     return from_sql(result)
+
+
 # [END read]
 
 
 # [START create]
 def create(data):
+    print(data)
     truck = Truck(**data)
     db.session.add(truck)
     db.session.commit()
     return from_sql(truck)
+
+
 # [END create]
 
 
@@ -121,6 +149,8 @@ def update(data, id):
         setattr(truck, k, v)
     db.session.commit()
     return from_sql(truck)
+
+
 # [END update]
 
 
@@ -137,9 +167,10 @@ def listItem(limit=10, cursor=None):
              .limit(limit)
              .offset(cursor))
     items = builtin_list(map(from_sql, query.all()))
-    print("query %s" % query)
     next_page = cursor + limit if len(items) == limit else None
     return (items, next_page)
+
+
 # [END list]
 
 
@@ -149,6 +180,8 @@ def readItem(id):
     if not result:
         return None
     return from_sql(result)
+
+
 # [END read]
 
 
@@ -184,7 +217,6 @@ def listOrder(limit=10, cursor=None):
              .limit(limit)
              .offset(cursor))
     order = builtin_list(map(from_sql, query.all()))
-    print("query %s"%query)
     next_page = cursor + limit if len(order) == limit else None
     return (order, next_page)
 # [END list]
@@ -202,9 +234,14 @@ def readOrder(id):
 # [START create]
 def createOrder(data):
     order = Order(**data)
+    order.volume = 0.0
+    order.weight = 0.0
+    order.orderStatus = "Processing"
     db.session.add(order)
     db.session.commit()
     return from_sql(order)
+
+
 # [END create]
 
 
@@ -221,3 +258,43 @@ def updateOrder(data, id):
 def deleteOrder(id):
     Order.query.filter_by(id=id).delete()
     db.session.commit()
+
+
+def readItemsOrdered(id):
+    query = ItemsOrdered.query.filter_by(orderId=id)
+    result = builtin_list(map(from_sql, query.all()))
+    if not result:
+        return None
+    return result
+
+
+def createDelivery(truckId, orderId):
+    result = None
+    data = {'truckId': truckId, 'orderId': orderId, 'deliveryDate': None}
+    delivery = Delivery(**data)
+    db.session.add(delivery)
+    db.session.commit()
+    return from_sql(delivery)
+
+
+def findTrucks(id):
+    newOrder = from_sql(Order.query.get(id))
+    notInUsetruck = Truck.query.filter_by(inUse=0).all()
+    trucks = builtin_list(map(from_sql, notInUsetruck))
+    currentAvailible = []
+
+    for truck in trucks:
+        weight = 0.0
+        volume = 0.0
+        # find all orders a given truck is currently shipping
+        trucksOrder = Delivery.query.filter_by(truckId=truck['id']).all()
+        trucksOrders = builtin_list(map(from_sql, trucksOrder))
+        # add up the current volume and weight for all of the trucks orders
+        for order in trucksOrders:
+            currentOrder = Order.query.get(order['orderId'])
+            weight += float(currentOrder.weight)
+            volume += float(currentOrder.volume)
+        # if there is room on the truck for the new order add it to the list
+        if weight + float(newOrder['weight']) <= float(truck['weightCapacity']) and volume + float(newOrder['weight']) <= truck['maxVolume']:
+            currentAvailible.append(truck)
+    return currentAvailible
