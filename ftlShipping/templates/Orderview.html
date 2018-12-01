@@ -29,9 +29,14 @@
                 <li margin="0">{{order.destCity}}, {{order.destState}}, {{order.destZip}}</li>
             </ul>
         </div>
-        {% if not item == None %}
+
         <div class="col">
             <h3>Items:</h3>
+            <a href="/orders/{{order.orderId}}/addItems" class="btn btn-success btn-sm">
+                <i class="glyphicon glyphicon-edit"></i>
+                Add Items
+            </a>
+            {% if not item == None %}
             <table class="table-striped" width="400">
                 <thead>
                 <tr>

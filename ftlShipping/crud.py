@@ -136,7 +136,7 @@ def listItem():
 
     return render_template(
         "Itemlist.html",
-        item=items,
+        items=items,
         next_page_token=next_page_token)
 
 
@@ -187,4 +187,32 @@ def addItemToTruck(truckId, orderId):
     return redirect(url_for('.listOrders'))
 
 
+@crud.route('orders/<orderId>/addItems', methods=['GET', 'POST'])
+def addItemsToOrder(orderId):
+    order = get_model().readOrder(orderId)
+    token = request.args.get('page_token', None)
+    if token:
+        token = token.encode('utf-8')
 
+    if request.method == 'POST':
+        data = request.form.to_dict(flat=True)
+        dataObj = []
+        tempObj = {}
+        odd = True
+        for key, value in data.items():
+            if odd:
+                tempObj['amount'] = value
+                odd = False
+            else:
+                tempObj['itemId'] = value
+                dataObj.append(tempObj)
+                tempObj = {}
+                odd = True
+        for item in dataObj:
+            if item['amount'] == '' or item['amount'] == '0':
+                continue
+            get_model().addItemsOrdered(item['itemId'], orderId, item['amount'])
+
+    items, next_page_token = get_model().listItem(cursor=token)
+    return render_template(
+        "Itemlist.html", items=items, next_page_token=next_page_token, action="Order", itemsOrdered={}, order=order)

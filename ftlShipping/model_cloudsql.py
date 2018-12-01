@@ -36,6 +36,8 @@ class Truck(db.Model):
 
     def __repr__(self):
         return "<Truck(id='%i', carrier=%s)" % (self.truckId, self.carrier)
+
+
 # [END truck model]
 
 
@@ -98,8 +100,8 @@ class Item(db.Model):
 class ItemsOrdered(db.Model):
     __tablename__ = 'ItemsOrdered'
 
-    orderId = db.Column(db.Integer, primary_key=True)
     itemId = db.Column(db.Integer, primary_key=True)
+    orderId = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer)
     id = synonym('orderId')
 
@@ -191,6 +193,8 @@ def createItem(data):
     db.session.add(item)
     db.session.commit()
     return from_sql(item)
+
+
 # [END create]
 
 
@@ -200,7 +204,10 @@ def updateItem(data, id):
     for k, v in data.items():
         setattr(item, k, v)
     db.session.commit()
+    print(item)
     return from_sql(item)
+
+
 # [END update]
 
 
@@ -219,6 +226,8 @@ def listOrder(limit=10, cursor=None):
     order = builtin_list(map(from_sql, query.all()))
     next_page = cursor + limit if len(order) == limit else None
     return (order, next_page)
+
+
 # [END list]
 
 
@@ -228,6 +237,8 @@ def readOrder(id):
     if not result:
         return None
     return from_sql(result)
+
+
 # [END read]
 
 
@@ -252,12 +263,44 @@ def updateOrder(data, id):
         setattr(order, k, v)
     db.session.commit()
     return from_sql(order)
+
+
 # [END update]
 
 
 def deleteOrder(id):
     Order.query.filter_by(id=id).delete()
     db.session.commit()
+
+
+def updateItemsOrdered(data, itemId, orderId):
+    item = ItemsOrdered.query.get((itemId, orderId))
+    amount = int(data['amount']) + item.amount
+    setattr(item, 'amount', amount)
+    db.session.commit()
+    return from_sql(item)
+
+
+def addItemsOrdered(itemId, orderId, amount):
+    data = {'orderId': orderId, 'itemId': itemId, 'amount': amount}
+    order = Order.query.get(orderId)
+    item = readItem(itemId)
+    item['stock'] = item['stock'] - int(amount)
+    if ItemsOrdered.query.get((itemId, orderId)) is None:
+        orderItem = ItemsOrdered(**data)
+        db.session.add(orderItem)
+        db.session.commit()
+    else:
+        orderItem = updateItemsOrdered(data, itemId, orderId)
+
+    newItem = updateItem(item, itemId)
+    newWeight = (float(newItem['weight']) * int(amount)) + float(order.weight)
+    newVolume = (float(newItem['volume']) * int(amount)) + float(order.volume)
+    newOrder = from_sql(order)
+    newOrder['weight'] = newWeight
+    newOrder['volume'] = newVolume
+    updateOrder(newOrder, orderId)
+    return orderItem
 
 
 def readItemsOrdered(id):
@@ -269,7 +312,6 @@ def readItemsOrdered(id):
 
 
 def createDelivery(truckId, orderId):
-    result = None
     data = {'truckId': truckId, 'orderId': orderId, 'deliveryDate': None}
     delivery = Delivery(**data)
     db.session.add(delivery)
@@ -295,6 +337,8 @@ def findTrucks(id):
             weight += float(currentOrder.weight)
             volume += float(currentOrder.volume)
         # if there is room on the truck for the new order add it to the list
-        if weight + float(newOrder['weight']) <= float(truck['weightCapacity']) and volume + float(newOrder['weight']) <= truck['maxVolume']:
+        if weight + float(newOrder['weight']) <= float(truck['weightCapacity']) and volume + float(
+                newOrder['weight']) <= truck['maxVolume']:
             currentAvailible.append(truck)
     return currentAvailible
+
