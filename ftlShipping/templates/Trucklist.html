@@ -8,14 +8,36 @@
   Add Truck
 </a>
 
-{% for truck in trucks %}
 <div class="media">
-  <a href="/trucks/{{truck.truckId}}">
-  </a>
+    <table class="table-striped" width="800">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Type</th>
+            <th>Carrier</th>
+            <th>In Use</th>
+            <th>Max weight</th>
+            <th>Max volume</th>
+            <th>Cost per mile</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in item %}
+        <tr>
+            <td><a href="/trucks/{{truck.truckId}}">
+                {{truck.truckId}}
+            </a></td>
+            <td>{{truck.type}}</td>
+            <td>{{truck.carrier}}</td>
+            <td>{{truck.inUse}}</td>
+            <td>{{truck.weightCapacity}}</td>
+            <td>{{truck.maxVolume}}</td>
+            <td>{{truck.costPerMile}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
-{% else %}
-<p>No trucks found</p>
-{% endfor %}
 
 {% if next_page_token %}
 <nav>

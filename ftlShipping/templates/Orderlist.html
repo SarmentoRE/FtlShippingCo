@@ -8,14 +8,28 @@
   Add Order
 </a>
 
-{% for truck in trucks %}
 <div class="media">
-  <a href="/orders/{{orders.orderId}}">
-  </a>
+    <table class="table-striped" width="400">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Date Ordered</th>
+            <th>Order Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in order %}
+        <tr>
+            <td><a href="/orders/{{order.orderId}}">
+                {{order.orderId}}
+            </a></td>
+            <td>{{order.dateOrdered}}</td>
+            <td>{{order.orderStatus}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
-{% else %}
-<p>No orders found</p>
-{% endfor %}
 
 {% if next_page_token %}
 <nav>
