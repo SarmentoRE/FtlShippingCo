@@ -2,20 +2,60 @@
 
 {% block content %}
 
-<h3>Truck</h3>
-
+<h3>Truck: {{truck.truckId}}</h3>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p>Id: {{truck.truckId}}</p>
+            <p>Type: {{truck.type}}</p>
+            <p>Carrier: {{truck.carrier}}</p>
+            {% if truck.inUse == 0 %}
+            <p>In Use: No</p>
+            {% else %}
+            <p>In Use: Yes</p>
+            {% endif %}
+            <p>Max weight: {{truck.weightCapacity}} lbs.</p>
+            <p>Max volume: {{truck.maxVolume}} in.<sup>3</sup></p>
+            <p>Cost per mile: ${{truck.costPerMile}}</p>
+        </div>
+        <div class="col">
+            <h3>Orders:</h3>
+            {% if not orders == None %}
+            <table class="table-striped" width="200">
+                <thead>
+                <tr>
+                    <th>Order Id</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><a href="/orders/{{order.orderId}}">
+                        {{order.orderId}}
+                    </a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
 <div class="btn-group">
-  <a href="/trucks/{{truck.truckId}}/edit" class="btn btn-primary btn-sm">
-    <i class="glyphicon glyphicon-edit"></i>
-    Edit truck
-  </a>
-  <a href="/trucks/{{truck.truckId}}/delete" class="btn btn-danger btn-sm">
-    <i class="glyphicon glyphicon-trash"></i>
-    Delete truck
-  </a>
+    <a href="/trucks/{{truck.truckId}}/edit" class="btn btn-primary btn-sm">
+        <i class="glyphicon glyphicon-edit"></i>
+        Edit truck
+    </a>
+    <a href="/trucks/{{truck.truckId}}/delete" class="btn btn-danger btn-sm">
+        <i class="glyphicon glyphicon-trash"></i>
+        Delete truck
+    </a>
+    <a href="/trucks/{{truck.truckId}}/ship" class="btn btn-success btn-sm">
+        <i class="glyphicon glyphicon-trash"></i>
+        Begin Shipment
+    </a>
 </div>
 
-<div class="media">
 
 </div>
 

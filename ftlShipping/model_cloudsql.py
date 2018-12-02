@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import synonym
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import synonym, relationship
+from datetime import date
 
 builtin_list = list
 
@@ -44,8 +46,8 @@ class Truck(db.Model):
 class Delivery(db.Model):
     __tablename__ = 'Delivery'
 
-    truckId = db.Column(db.Integer, primary_key=True)
-    orderId = db.Column(db.Integer, primary_key=True)
+    truckId = db.Column(db.Integer, ForeignKey("Item.itemId", ondelete='CASCADE'),  primary_key=True)
+    orderId = db.Column(db.Integer, ForeignKey("Orders.orderId", ondelete='CASCADE'),  primary_key=True)
     deliveryDate = db.Column(db.Date())
     id = synonym("truckId")
 
@@ -71,6 +73,8 @@ class Order(db.Model):
     dateOrdered = db.Column(db.Date())
     orderStatus = db.Column(db.String(16))
     id = synonym("orderId")
+
+    delivery = relationship(Delivery, backref="Orders", passive_deletes='all')
 
     def __repr__(self):
         if self.destAptNumber is None:
@@ -101,7 +105,7 @@ class ItemsOrdered(db.Model):
     __tablename__ = 'ItemsOrdered'
 
     itemId = db.Column(db.Integer, primary_key=True)
-    orderId = db.Column(db.Integer, primary_key=True)
+    orderId = db.Column(db.Integer, ForeignKey(Order.orderId))
     amount = db.Column(db.Integer)
     id = synonym('orderId')
 
@@ -276,9 +280,13 @@ def deleteOrder(id):
 def updateItemsOrdered(data, itemId, orderId):
     item = ItemsOrdered.query.get((itemId, orderId))
     amount = int(data['amount']) + item.amount
-    setattr(item, 'amount', amount)
-    db.session.commit()
-    return from_sql(item)
+    if amount <= 0:
+        deleteItemsOrdered(itemId,orderId)
+        return None
+    else:
+        setattr(item, 'amount', amount)
+        db.session.commit()
+        return from_sql(item)
 
 
 def addItemsOrdered(itemId, orderId, amount):
@@ -311,12 +319,34 @@ def readItemsOrdered(id):
     return result
 
 
+def deleteItemsOrdered(itemId, orderId):
+    ItemsOrdered.query.filter_by(itemId=itemId, orderId=orderId).delete()
+    db.session.commit()
+
+def readDelivery(id):
+    query = Delivery.query.filter_by(truckId=id)
+    result = builtin_list(map(from_sql, query.all()))
+    if not result:
+        return None
+    return result
+
+
 def createDelivery(truckId, orderId):
     data = {'truckId': truckId, 'orderId': orderId, 'deliveryDate': None}
     delivery = Delivery(**data)
     db.session.add(delivery)
     db.session.commit()
     return from_sql(delivery)
+
+
+def deliverItems(truckId):
+    query = Delivery.query.filter_by(truckId=truckId).all()
+    deliveries = builtin_list(map(from_sql, query))
+
+    for order in deliveries:
+        shippedOrder = readOrder(order['orderId'])
+        shippedOrder['orderStatus'] = "Delivered"
+        updateOrder(shippedOrder, order['orderId'])
 
 
 def findTrucks(id):
@@ -341,4 +371,3 @@ def findTrucks(id):
                 newOrder['weight']) <= truck['maxVolume']:
             currentAvailible.append(truck)
     return currentAvailible
-

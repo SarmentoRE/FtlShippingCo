@@ -30,7 +30,7 @@
                 <td>{{item.stock}}</td>
                 {% if action == "Order" %}
                 <div class="form-group">
-                    <td width="100"><input type="number" max="{{item.stock}}" min="0" name="itemsToOrder{{item.itemId}}"
+                    <td width="100"><input type="number" max="{{item.stock}}"  name="itemsToOrder{{item.itemId}}"
                                            id="itemsToOrder{{item.itemId}}"
                                            value="{{itemsOrdered.amount}}" class="form-control"/>
                     </td>

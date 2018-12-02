@@ -18,7 +18,7 @@
 
   <div class="form-group">
     <label for="weightCapacity">Weight Capacity</label>
-    <input type="number" name="weightCapacity" id="weightCapacity" value="{{truck.weightCapacity}}" class="form-control"/>
+    <input type="number" step="0.01" name="weightCapacity" id="weightCapacity" value="{{truck.weightCapacity}}" class="form-control"/>
   </div>
 
     <div class="form-group">
@@ -28,12 +28,12 @@
 
     <div class="form-group">
     <label for="maxVolume">Max Volume</label>
-    <input type="number" name="maxVolume" id="maxVolume" value="{{truck.maxVolume}}" class="form-control"/>
+    <input type="number" step="0.01" name="maxVolume" id="maxVolume" value="{{truck.maxVolume}}" class="form-control"/>
   </div>
 
     <div class="form-group">
             <label for="inUse">In Use</label>
-            <input type="number" name="inUse" id="inUse" value="{{truck.inUse}}" class="form-control"/>
+            <input type="number" max="1" min="0" name="inUse" id="inUse" value="{{truck.inUse}}" class="form-control"/>
     </div>
 
   <div class="form-group">

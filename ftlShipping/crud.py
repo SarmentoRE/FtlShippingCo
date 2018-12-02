@@ -26,7 +26,8 @@ def list():
 @crud.route('trucks/<id>')
 def view(id):
     truck = get_model().read(id)
-    return render_template("Truckview.html", truck=truck)
+    orders = get_model().readDelivery(id)
+    return render_template("Truckview.html", truck=truck, orders=orders)
 
 
 @crud.route('trucks/add', methods=['GET', 'POST'])
@@ -185,6 +186,15 @@ def addItemToTruck(truckId, orderId):
     order['orderStatus'] = "Shipped"
     get_model().updateOrder(order, orderId)
     return redirect(url_for('.listOrders'))
+
+
+@crud.route('trucks/<truckId>/ship')
+def shipItems(truckId):
+    truck = get_model().read(truckId)
+    truck['inUse'] = 1;
+    get_model().update(truck, truckId)
+    get_model().deliverItems(truckId)
+    return redirect(url_for('.list'))
 
 
 @crud.route('orders/<orderId>/addItems', methods=['GET', 'POST'])
