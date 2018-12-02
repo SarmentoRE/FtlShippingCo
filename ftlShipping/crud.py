@@ -11,16 +11,11 @@ def home():
 
 @crud.route("/trucks")
 def list():
-    token = request.args.get('page_token', None)
-    if token:
-        token = token.encode('utf-8')
-
-    trucks, next_page_token = get_model().list(cursor=token)
+    trucks = get_model().list()
 
     return render_template(
         "Trucklist.html",
-        truck=trucks,
-        next_page_token=next_page_token)
+        truck=trucks)
 
 
 @crud.route('trucks/<id>')
@@ -65,16 +60,11 @@ def delete(id):
 # Begin orders
 @crud.route("/orders")
 def listOrders():
-    token = request.args.get('page_token', None)
-    if token:
-        token = token.encode('utf-8')
-
-    orders, next_page_token = get_model().listOrder(cursor=token)
+    orders = get_model().listOrder()
 
     return render_template(
         "Orderlist.html",
-        order=orders,
-        next_page_token=next_page_token)
+        order=orders)
 
 
 @crud.route('orders/<id>/ship')
@@ -129,16 +119,11 @@ def deleteOrders(id):
 # Begin Item
 @crud.route("/item")
 def listItem():
-    token = request.args.get('page_token', None)
-    if token:
-        token = token.encode('utf-8')
-
-    items, next_page_token = get_model().listItem(cursor=token)
+    items = get_model().listItem()
 
     return render_template(
         "Itemlist.html",
-        items=items,
-        next_page_token=next_page_token)
+        items=items)
 
 
 @crud.route('item/<id>')
@@ -175,7 +160,7 @@ def editItem(id):
 
 @crud.route('item/<id>/delete')
 def deleteItem(id):
-    get_model().deleteItemk(id)
+    get_model().deleteItem(id)
     return redirect(url_for('.listItem'))
 
 
@@ -221,8 +206,12 @@ def addItemsToOrder(orderId):
         for item in dataObj:
             if item['amount'] == '' or item['amount'] == '0':
                 continue
+            stock = get_model().findItemsOrdered(int(item['itemId']), orderId)
+            if stock is None:
+                stock = {'amount': 0}
+            item['amount'] = max(-1 * int(stock['amount']), int(item['amount']))
             get_model().addItemsOrdered(item['itemId'], orderId, item['amount'])
 
-    items, next_page_token = get_model().listItem(cursor=token)
+    items = get_model().listItem()
     return render_template(
-        "Itemlist.html", items=items, next_page_token=next_page_token, action="Order", itemsOrdered={}, order=order)
+        "Itemlist.html", items=items, action="Order", itemsOrdered={}, order=order)

@@ -30,9 +30,9 @@
             <td>{{truck.type}}</td>
             <td>{{truck.carrier}}</td>
             {% if truck.inUse == 0 %}
-                <td>No</td>
+            <td>No</td>
             {% else %}
-                <td>Yes</td>
+            <td>Yes</td>
             {% endif %}
             <td>{{truck.weightCapacity}} lbs.</td>
             <td>{{truck.maxVolume}} in.<sup>3</sup></td>
@@ -48,13 +48,4 @@
         </tbody>
     </table>
 </div>
-
-{% if next_page_token %}
-<nav>
-    <ul class="pager">
-        <li><a href="?page_token={{next_page_token}}">More</a></li>
-    </ul>
-</nav>
-{% endif %}
-
 {% endblock %}

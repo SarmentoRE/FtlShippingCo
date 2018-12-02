@@ -32,10 +32,12 @@
 
         <div class="col">
             <h3>Items:</h3>
+            {% if order.orderStatus == "Processing" %}
             <a href="/orders/{{order.orderId}}/addItems" class="btn btn-success btn-sm">
                 <i class="glyphicon glyphicon-edit"></i>
-                Add Items
+                Edit Items
             </a>
+            {% endif %}
             {% if not item == None %}
             <table class="table-striped" width="400">
                 <thead>

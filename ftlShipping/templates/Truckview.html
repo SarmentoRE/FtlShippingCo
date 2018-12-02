@@ -50,13 +50,11 @@
         <i class="glyphicon glyphicon-trash"></i>
         Delete truck
     </a>
+    {% if truck.inUse == 0 %}
     <a href="/trucks/{{truck.truckId}}/ship" class="btn btn-success btn-sm">
         <i class="glyphicon glyphicon-trash"></i>
         Begin Shipment
     </a>
+    {% endif %}
 </div>
-
-
-</div>
-
 {% endblock %}

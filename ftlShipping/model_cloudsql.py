@@ -46,8 +46,8 @@ class Truck(db.Model):
 class Delivery(db.Model):
     __tablename__ = 'Delivery'
 
-    truckId = db.Column(db.Integer, ForeignKey("Item.itemId", ondelete='CASCADE'),  primary_key=True)
-    orderId = db.Column(db.Integer, ForeignKey("Orders.orderId", ondelete='CASCADE'),  primary_key=True)
+    truckId = db.Column(db.Integer, primary_key=True)
+    orderId = db.Column(db.Integer, primary_key=True)
     deliveryDate = db.Column(db.Date())
     id = synonym("truckId")
 
@@ -73,8 +73,6 @@ class Order(db.Model):
     dateOrdered = db.Column(db.Date())
     orderStatus = db.Column(db.String(16))
     id = synonym("orderId")
-
-    delivery = relationship(Delivery, backref="Orders", passive_deletes='all')
 
     def __repr__(self):
         if self.destAptNumber is None:
@@ -105,21 +103,17 @@ class ItemsOrdered(db.Model):
     __tablename__ = 'ItemsOrdered'
 
     itemId = db.Column(db.Integer, primary_key=True)
-    orderId = db.Column(db.Integer, ForeignKey(Order.orderId))
+    orderId = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer)
     id = synonym('orderId')
 
 
 # [START list]
-def list(limit=10, cursor=None):
-    cursor = int(cursor) if cursor else 0
+def list():
     query = (Truck.query
-             .order_by(Truck.costPerMile)
-             .limit(limit)
-             .offset(cursor))
+             .order_by(Truck.costPerMile))
     trucks = builtin_list(map(from_sql, query.all()))
-    next_page = cursor + limit if len(trucks) == limit else None
-    return (trucks, next_page)
+    return (trucks)
 
 
 # [END list]
@@ -166,15 +160,11 @@ def delete(id):
 
 
 # [START list]
-def listItem(limit=10, cursor=None):
-    cursor = int(cursor) if cursor else 0
+def listItem():
     query = (Item.query
-             .order_by(Item.itemId)
-             .limit(limit)
-             .offset(cursor))
+             .order_by(Item.itemId))
     items = builtin_list(map(from_sql, query.all()))
-    next_page = cursor + limit if len(items) == limit else None
-    return (items, next_page)
+    return (items)
 
 
 # [END list]
@@ -221,15 +211,11 @@ def deleteItem(id):
 
 
 # [START list]
-def listOrder(limit=10, cursor=None):
-    cursor = int(cursor) if cursor else 0
+def listOrder():
     query = (Order.query
-             .order_by(Order.orderId)
-             .limit(limit)
-             .offset(cursor))
+             .order_by(Order.orderId))
     order = builtin_list(map(from_sql, query.all()))
-    next_page = cursor + limit if len(order) == limit else None
-    return (order, next_page)
+    return (order)
 
 
 # [END list]
@@ -281,7 +267,7 @@ def updateItemsOrdered(data, itemId, orderId):
     item = ItemsOrdered.query.get((itemId, orderId))
     amount = int(data['amount']) + item.amount
     if amount <= 0:
-        deleteItemsOrdered(itemId,orderId)
+        deleteItemsOrdered(itemId, orderId)
         return None
     else:
         setattr(item, 'amount', amount)
@@ -289,7 +275,16 @@ def updateItemsOrdered(data, itemId, orderId):
         return from_sql(item)
 
 
+def findItemsOrdered(itemId, orderId):
+    query = ItemsOrdered.query.filter_by(itemId=itemId, orderId=orderId).first()
+    if query is None:
+        return None
+    return from_sql(query)
+
+
 def addItemsOrdered(itemId, orderId, amount):
+    if amount == 0:
+        return None
     data = {'orderId': orderId, 'itemId': itemId, 'amount': amount}
     order = Order.query.get(orderId)
     item = readItem(itemId)
@@ -322,6 +317,7 @@ def readItemsOrdered(id):
 def deleteItemsOrdered(itemId, orderId):
     ItemsOrdered.query.filter_by(itemId=itemId, orderId=orderId).delete()
     db.session.commit()
+
 
 def readDelivery(id):
     query = Delivery.query.filter_by(truckId=id)
